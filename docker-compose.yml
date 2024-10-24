@@ -3,14 +3,30 @@ services:
       build:
         context: .
         dockerfile: Dockerfile
-      image: my-postgres:16.3
-      container_name: my-postgres-16.3
+      image: postgres-docker:16.4
+      container_name: postgres-16.4
       environment:
-        - POSTGRES_DB=test-db
+        - POSTGRES_DB=develop
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
       ports:
         - 5432:5432
       volumes:
-        - ./data:/var/lib/postgresql/data
-        - ./init:/docker-entrypoint-initdb.d
+        - postgres-volume:/var/lib/postgresql/data
+
+  pgadmin4:
+    image: dpage/pgadmin4:8.12.0
+    container_name: postgres-pgadmin4
+    volumes:
+      - postgres-pgadmin:/var/lib/pgadmin
+    ports:
+      - 8888:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@example.com
+      - PGADMIN_DEFAULT_PASSWORD=passwd
+    depends_on:
+      - database
+
+volumes:
+  postgres-volume:
+  postgres-pgadmin:
